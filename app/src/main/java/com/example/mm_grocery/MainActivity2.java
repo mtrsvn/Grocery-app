@@ -17,7 +17,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mm_grocery.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,111 +26,114 @@ import java.util.Map;
 
 public class MainActivity2 extends AppCompatActivity {
 
-    private EditText courseIDEdt;
-    private Button getCourseDetailsBtn, backButton, deleteButton, BtnEdit;
-    private CardView courseCV;
-    private TextView courseNameTV, courseDescTV, courseDurationTV;
+    private EditText groceryIDEdt;
+    private Button getGroceryID_mm, previousPageBtn_mm, deleteGroceryBtn_mm, editButton;
+    private CardView groceryCV;
+    private TextView mm_itm_nameTV, mm_itm_priceTV, mm_itm_qtyTV;
+
+    private String itemName, itemPrice, itemQty, itemID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        courseNameTV = findViewById(R.id.idTVCourseName);
-        courseDescTV = findViewById(R.id.idTVCourseDescription);
-        courseDurationTV = findViewById(R.id.idTVCourseDuration);
-        getCourseDetailsBtn = findViewById(R.id.idBtnGetCourse);
-        backButton = findViewById(R.id.idBtnBack);
-        courseIDEdt = findViewById(R.id.idEdtCourseId);
-        courseCV = findViewById(R.id.idCVCOurseItem);
-        deleteButton = findViewById(R.id.idBtnDelete);
-        BtnEdit = findViewById(R.id.idBtnEdit);
+        Bundle bdl = getIntent().getExtras();
+        mm_itm_nameTV = findViewById(R.id.idTVmm_itm_name);
+        mm_itm_priceTV = findViewById(R.id.idTVmm_itm_price);
+        mm_itm_qtyTV = findViewById(R.id.idTVmm_itm_qty);
+        getGroceryID_mm = findViewById(R.id.btnSubmitID_mm);
+        previousPageBtn_mm = findViewById(R.id.btnPrev_mm);
+        deleteGroceryBtn_mm = findViewById(R.id.idBtnDeleteGroceryDetails);
+        editButton = findViewById(R.id.idBtnEditGroceryDetails);
+        groceryIDEdt = findViewById(R.id.enterID_mm);
+        groceryCV = findViewById(R.id.idCVGroceryItem_mm);
 
-        getCourseDetailsBtn.setOnClickListener(v -> {
-            if (TextUtils.isEmpty(courseIDEdt.getText().toString())) {
-                Toast.makeText(MainActivity2.this, "Please enter product id", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            getCourseDetails(courseIDEdt.getText().toString());
-        });
-
-        deleteButton.setOnClickListener(v -> {
-            if (TextUtils.isEmpty(courseIDEdt.getText().toString())) {
-                Toast.makeText(MainActivity2.this, "Please enter product id to delete", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            deleteGroceryDetails(courseIDEdt.getText().toString());
-        });
-
-        backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity2.this, MainActivity.class);
-            startActivity(intent);
+        editButton.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity2.this, MainActivity.class);
+            myIntent.putExtra("id", groceryIDEdt.getText().toString());
+            myIntent.putExtra("itmName", mm_itm_nameTV.getText().toString());
+            myIntent.putExtra("itmPrice", mm_itm_priceTV.getText().toString());
+            myIntent.putExtra("itmQty", mm_itm_qtyTV.getText().toString());
+            MainActivity2.this.startActivity(myIntent);
             finish();
         });
 
-        BtnEdit.setOnClickListener(v -> {
+        getGroceryID_mm.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(groceryIDEdt.getText().toString())) {
+                Toast.makeText(MainActivity2.this, "Please enter grocery ID", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            getGroceryDetails(groceryIDEdt.getText().toString());
+        });
+
+        previousPageBtn_mm.setOnClickListener(v -> {
             Intent myIntent = new Intent(MainActivity2.this, MainActivity.class);
-            myIntent.putExtra("id", courseIDEdt.getText().toString());
-            myIntent.putExtra("name", courseNameTV.getText().toString());
-            myIntent.putExtra("description", courseDescTV.getText().toString());
-            myIntent.putExtra("quantity", courseDurationTV.getText().toString());
             startActivity(myIntent);
+        });
+
+        deleteGroceryBtn_mm.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(groceryIDEdt.getText().toString())) {
+                Toast.makeText(MainActivity2.this, "Please enter grocery ID", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            deleteGroceryDetails(groceryIDEdt.getText().toString());
         });
     }
 
-    private void getCourseDetails(String mm_id) {
-        String url = "http://192.168.34.222/mm_grocery/mm_itmsread.php";
+    private void getGroceryDetails(String groceryId) {
+        String url = "http://172.20.10.6/mm_grocery/mm_read.php";
         RequestQueue queue = Volley.newRequestQueue(MainActivity2.this);
 
         StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
             try {
                 JSONObject jsonObject = new JSONObject(response);
-                if (jsonObject.getString("mm_itm_name") == null) {
-                    Toast.makeText(MainActivity2.this, "Please enter valid id.", Toast.LENGTH_SHORT).show();
+                if (!jsonObject.has("mm_itm_name")) {
+                    Toast.makeText(MainActivity2.this, "Please enter a valid ID.", Toast.LENGTH_SHORT).show();
                 } else {
-                    courseNameTV.setText(jsonObject.getString("mm_itm_name"));
-                    courseDescTV.setText(jsonObject.getString("mm_itm_price"));
-                    courseDurationTV.setText(jsonObject.getString("mm_itm_qty"));
-                    courseCV.setVisibility(View.VISIBLE);
+                    itemName = jsonObject.getString("mm_itm_name");
+                    itemPrice = jsonObject.getString("mm_itm_price");
+                    itemQty = jsonObject.getString("mm_itm_qty");
+                    itemID = groceryId;
+                    mm_itm_nameTV.setText(itemName);
+                    mm_itm_priceTV.setText(itemPrice);
+                    mm_itm_qtyTV.setText(itemQty);
+                    groceryCV.setVisibility(View.VISIBLE);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                Toast.makeText(MainActivity2.this, "Error parsing JSON: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        }, error -> Toast.makeText(MainActivity2.this, "Fail to get course" + error, Toast.LENGTH_SHORT).show()) {
+        }, new com.android.volley.Response.ErrorListener() {
             @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity2.this, "Fail to get grocery" + error, Toast.LENGTH_SHORT).show();
             }
-
+        }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("mm_id", mm_id);
+                params.put("mm_id", groceryId);
                 return params;
             }
         };
+
         queue.add(request);
     }
 
-    private void deleteGroceryDetails(String mm_id) {
-        String url = "http://192.168.34.222/mm_grocery/mm_itmsdel.php";
+    private void deleteGroceryDetails(String groceryId) {
+        String url = "http://172.20.10.6/mm_grocery/mm_delete.php";
         RequestQueue queue = Volley.newRequestQueue(MainActivity2.this);
+
         StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
             try {
                 JSONObject jsonObject = new JSONObject(response);
-                if (!jsonObject.getBoolean("error")) {
-                    Toast.makeText(MainActivity2.this, "Deleted", Toast.LENGTH_SHORT).show();
-                    courseCV.setVisibility(View.GONE);
-                    courseNameTV.setText("");
-                    courseDescTV.setText("");
-                    courseDurationTV.setText("");
-                } else {
-                    Toast.makeText(MainActivity2.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(MainActivity2.this, "Details Deleted Successfully!", Toast.LENGTH_SHORT).show();
+                groceryCV.setVisibility(View.GONE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, error -> Toast.makeText(MainActivity2.this, "Fail to delete" + error, Toast.LENGTH_SHORT).show()) {
+        }, error -> Toast.makeText(MainActivity2.this, "Failed to delete details: " + error, Toast.LENGTH_SHORT).show()) {
             @Override
             public String getBodyContentType() {
                 return "application/x-www-form-urlencoded; charset=UTF-8";
@@ -140,10 +142,11 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("mm_id", mm_id);
+                params.put("mm_id", groceryId);
                 return params;
             }
         };
+
         queue.add(request);
     }
 }

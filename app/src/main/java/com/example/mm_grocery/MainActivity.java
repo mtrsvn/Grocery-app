@@ -3,7 +3,6 @@ package com.example.mm_grocery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,80 +24,74 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText mm_itm_nameEdt, mm_itm_qtyEdt, mm_itm_priceEdt;
-    private Button submitCourseBtn, searchBtn, mm_idBtnEdit;
-    private String mm_itm_name, mm_itm_qty, mm_itm_price, mm_id;
+    private EditText mm_itm_nameEdt, mm_itm_priceEdt, mm_itm_qtyEdt;
+    private Button submitGrocery, nextButton;
+    private String mm_itm_name, mm_itm_price, mm_itm_qty;
+    private String mm_id = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mm_id="";
         Bundle bdl = getIntent().getExtras();
+        mm_itm_nameEdt = findViewById(R.id.idEdtmm_itm_name);
+        mm_itm_priceEdt = findViewById(R.id.idEdtmm_itm_price);
+        mm_itm_qtyEdt = findViewById(R.id.idEdtmm_itm_qty);
+        submitGrocery = findViewById(R.id.btnSubmitGro);
+        nextButton = findViewById(R.id.btnNext);
 
-        // Initializing EditText fields
-        mm_itm_nameEdt = findViewById(R.id.idEdtCourseName);
-        mm_itm_priceEdt = findViewById(R.id.idEdtCourseDescription);
-        mm_itm_qtyEdt = findViewById(R.id.idEdtCourseDuration);
-
-        // Initializing Buttons
-        submitCourseBtn = findViewById(R.id.idBtnSubmitCourse);
-        searchBtn = findViewById(R.id.idBtnSearch);
-
-        // Retrieve data from Intent bundle
-        if (bdl != null) {
-            mm_itm_nameEdt.setText(bdl.getString("mm_itm_name"));
-            mm_itm_priceEdt.setText(bdl.getString("mm_itm_price"));
-            mm_itm_qtyEdt.setText(bdl.getString("mm_itm_qty"));
-            mm_id = bdl.getString("mm_id");
-            mm_idBtnEdit.setText(mm_id);
-        }
-
-        submitCourseBtn.setOnClickListener(v -> {
-            mm_itm_name = mm_itm_nameEdt.getText().toString().trim();
-            mm_itm_price = mm_itm_priceEdt.getText().toString().trim();
-            mm_itm_qty = mm_itm_qtyEdt.getText().toString().trim();
-
-            if (TextUtils.isEmpty(mm_itm_name)) {
-                mm_itm_nameEdt.setError("Please enter Item Name");
-            } else if (TextUtils.isEmpty(mm_itm_price)) {
-                mm_itm_priceEdt.setError("Please enter Item Price");
-            } else if (TextUtils.isEmpty(mm_itm_qty)) {
-                mm_itm_qtyEdt.setError("Please enter Item Quantity");
-            } else {
-                addDataToDatabase(mm_itm_name, mm_itm_price, mm_itm_qty, mm_id);
-            }
+        nextButton.setOnClickListener(view -> {
+            Intent myIntent = new Intent(MainActivity.this, MainActivity2.class);
+            startActivity(myIntent);
         });
 
-        searchBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-            startActivity(intent);
+        if (bdl != null) {
+            mm_itm_nameEdt.setText(bdl.getString("itmName"));
+            mm_itm_priceEdt.setText(bdl.getString("itmPrice"));
+            mm_itm_qtyEdt.setText(bdl.getString("itmQty"));
+            mm_id = bdl.getString("id");
+        }
+
+        submitGrocery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mm_itm_name = mm_itm_nameEdt.getText().toString();
+                mm_itm_price = mm_itm_priceEdt.getText().toString();
+                mm_itm_qty = mm_itm_qtyEdt.getText().toString();
+
+                if (TextUtils.isEmpty(mm_itm_name)) {
+                    mm_itm_nameEdt.setError("Please Enter Grocery Name");
+                } else if (TextUtils.isEmpty(mm_itm_price)) {
+                    mm_itm_priceEdt.setError("Please Enter Price");
+                } else if (TextUtils.isEmpty(mm_itm_qty)) {
+                    mm_itm_qtyEdt.setError("Please Enter Quantity");
+                } else {
+                    addDataToDatabase(mm_itm_name, mm_itm_price, mm_itm_qty);
+                }
+            }
         });
     }
 
-    private void addDataToDatabase(String name, String price, String qty, String id) {
-        String url = "http://192.168.34.222/mm_grocery/mm_itmslist.php";
+    private void addDataToDatabase(String mm_itm_name, String mm_itm_price, String mm_itm_qty) {
+        String url = "http://172.20.10.6/mm_grocery/mm_insert.php";
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
-        StringRequest request = new StringRequest(Request.Method.POST, url,
-                response -> {
-                    Log.e("TAG", "RESPONSE IS " + response);
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        Toast.makeText(MainActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mm_itm_nameEdt.setText("");
-                    mm_itm_priceEdt.setText("");
-                    mm_itm_qtyEdt.setText("");
-                },
-                error -> {
-                    String message = "Fail to get response = " + error.toString();
-                    Log.e("VolleyError", message);
-                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                }) {
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                Toast.makeText(MainActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            mm_itm_nameEdt.setText("");
+            mm_itm_priceEdt.setText("");
+            mm_itm_qtyEdt.setText("");
+            mm_id = "";
+        }, error -> {
+            Toast.makeText(MainActivity.this, "Failed to insert: " + error, Toast.LENGTH_SHORT).show();
+        }) {
             @Override
             public String getBodyContentType() {
                 return "application/x-www-form-urlencoded; charset=UTF-8";
@@ -107,13 +100,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("mm_itm_name", name);
-                params.put("mm_itm_price", price);
-                params.put("mm_itm_qty", qty);
-                params.put("mm_id", id);
+                params.put("mm_id", mm_id);
+                params.put("mm_itm_name", mm_itm_name);
+                params.put("mm_itm_price", mm_itm_price);
+                params.put("mm_itm_qty", mm_itm_qty);
                 return params;
             }
         };
+
         queue.add(request);
     }
 }

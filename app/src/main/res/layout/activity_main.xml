@@ -7,11 +7,11 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!--Edit text for getting course Name-->
+    <!--Edit text for getting item Name-->
     <EditText
-        android:id="@+id/idEdtCourseName"
+        android:id="@+id/idEdtmm_itm_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
@@ -19,44 +19,46 @@
         android:importantForAutofill="no"
         android:inputType="text" />
 
-    <!--Edittext for getting course Duration-->
+    <!--EditText for getting item Price-->
     <EditText
-        android:id="@+id/idEdtCourseDuration"
+        android:id="@+id/idEdtmm_itm_price"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:hint="Price"
         android:importantForAutofill="no"
-        android:inputType="numberDecimal" />
+        android:inputType="text" />
 
-    <!--Edittext for getting course Description-->
+    <!--EditText for getting item Quantity-->
     <EditText
-        android:id="@+id/idEdtCourseDescription"
+        android:id="@+id/idEdtmm_itm_qty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:hint="Quantity"
         android:importantForAutofill="no"
-        android:inputType="numberDecimal" />
+        android:inputType="text" />
 
-    <!--Button for adding your course to Firebase-->
+    <!--Button for adding item to Firebase-->
     <Button
-        android:id="@+id/idBtnSubmitCourse"
+        android:id="@+id/btnSubmitGro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Submit"
+        android:text="Insert"
         android:textAllCaps="false" />
 
+    <!--Button for searching items-->
     <Button
-        android:id="@+id/idBtnSearch"
+        android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Search"/>
+        android:text="Search"
+        android:textAllCaps="false" />
 
 </LinearLayout>
