@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <!--Edit text for getting course Name-->
+    <EditText
+        android:id="@+id/idEdtCourseName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:hint="Name"
+        android:importantForAutofill="no"
+        android:inputType="text" />
+
+    <!--Edittext for getting course Duration-->
+    <EditText
+        android:id="@+id/idEdtCourseDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:hint="Price"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal" />
+
+    <!--Edittext for getting course Description-->
+    <EditText
+        android:id="@+id/idEdtCourseDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:hint="Quantity"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal" />
+
+    <!--Button for adding your course to Firebase-->
+    <Button
+        android:id="@+id/idBtnSubmitCourse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Submit"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/idBtnSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Search"/>
+
+</LinearLayout>
